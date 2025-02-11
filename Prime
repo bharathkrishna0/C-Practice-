@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+int main() {
+    int i = 2;
+    int x;
+
+    
+    printf("Input x: ");
+    scanf("%d", &x);
+
+    
+    if (x <= 1) {
+        printf("%d is not prime\n", x);
+        return 0;
+    }
+
+    
+    while (i <= x / 2) {
+        if (x % i == 0) {
+            break;
+        }
+        i++;
+    }
+
+    
+    if (i > x / 2) {
+        printf("%d is prime\n", x);
+    } else {
+         printf("%d is not prime\n", x);
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+        printf("%d is not prime\n", x);
+    }
+
+    return 0;
+}
