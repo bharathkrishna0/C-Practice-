@@ -1,2 +1,2 @@
-# C-Practice-
-questions for learning C everyday 3 problem
+# C/C++-Practice Projects
+to maintain consistency
