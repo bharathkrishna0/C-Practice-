@@ -4,14 +4,23 @@
 #include <algorithm>
 
 class BankAccount {
-public:    
-    int balance;
+private:    
+    int balance; // make member variables private
     int accountNumber;
     std::string accountHolderName;
     
-    // Constructor
-    BankAccount(int accNum = 0, std::string name = "", int bal = 0) 
-        : accountNumber(accNum), accountHolderName(name), balance(bal) {}
+public:    // Constructor
+        BankAccount(int accNum = 0, std::string name = "", int bal = 0) 
+            : accountNumber(accNum), accountHolderName(name), balance(bal) {}
+        int getBalance() const{
+            return balance;
+        }
+        int getAccountNumber() const{
+            return accountNumber;
+        }
+        std::string getAccountHolderName() const{
+            return accountHolderName;
+        }
         
     void Deposit_money() {
         int depo = 0;
@@ -43,7 +52,7 @@ public:
         }
     }
     
-    void accdet() {
+    void accdet() const {
         std::cout << "Account Number " << accountNumber << std::endl;
         std::cout << "Account Holder " << accountHolderName << std::endl;
         std::cout << "Balance " << balance << std::endl;
@@ -59,7 +68,7 @@ void addBankAccount(int accountNumber, std::string accountHolderName, int balanc
 
 void sortAccounts() {
     std::sort(accounts.begin(), accounts.end(), [](const BankAccount& a, const BankAccount& b) {
-        return a.balance < b.balance;
+        return a.getBalance() < b.getBalance();
     });
 }
 
@@ -70,20 +79,13 @@ void displayDetails() {
     }
     
     for (const auto& account : accounts) {
-        std::cout << "Account Numr: " << account.accountNumber 
-                  << ", Name " << account.accountHolderName 
-                  << ", Balance " << account.balance << std::endl;
+        account.accdet();
     }
 }
-
-void searchAccount() {
-    int searchAccountNumber;
-    std::cout << "Enter account number  ";
-    std::cin >> searchAccountNumber;
-    
-    auto it = std::find_if(accounts.begin(), accounts.end(), 
+void displayDetails(int searchAccountNumber){
+        auto it = std::find_if(accounts.begin(), accounts.end(), 
                           [searchAccountNumber](const BankAccount& account) {
-                              return account.accountNumber == searchAccountNumber;
+                              return account.getAccountNumber() == searchAccountNumber;
                           });
     
     if (it != accounts.end()) {
@@ -92,6 +94,14 @@ void searchAccount() {
     } else {
         std::cout << "Account not foun" << std::endl;
     }
+}
+void searchAccount() {
+    int searchAccountNumber;
+    std::cout << "Enter account number  ";
+    std::cin >> searchAccountNumber;
+    // implrmrnt function overloading
+    displayDetails( searchAccountNumber);
+    
 }
 
 int main() {
@@ -154,7 +164,7 @@ int main() {
                 std::cout << "Enter account number: ";
                 std::cin >> accNum;
                 auto it = std::find_if(accounts.begin(), accounts.end(), [accNum](const BankAccount& account) {
-                    return account.accountNumber == accNum;
+                    return account.getAccountNumber() == accNum;
                 });
                 if (it != accounts.end()) {
                     it->Deposit_money();
@@ -170,7 +180,7 @@ int main() {
                 
                 auto it = std::find_if(accounts.begin(), accounts.end(), 
                                       [accNum](const BankAccount& account) {
-                                          return account.accountNumber == accNum;
+                                          return account.getAccountNumber() == accNum;
                                       });
                 
                 if (it != accounts.end()) {
