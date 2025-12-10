@@ -1,0 +1,70 @@
+#include <lmic.h>
+#include <hal/hal.h>
+#include <SPI.h>
+
+// --- FILL IN YOUR KEYS ---
+static const u1_t PROGMEM DEVEUI[8]  = { 0xAA,0xBB,0xCC,0xDD,0x11,0x22,0x33,0x44 };
+static const u1_t PROGMEM APPEUI[8] = { 0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC };
+static const u1_t PROGMEM APPKEY[16] = { 
+  0x12,0x34,0x56,0x78,0x90,0xAB,0xCD,0xEF,
+  0x01,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF
+};
+
+// Pin mapping
+const lmic_pinmap lmic_pins = {
+    .nss = 7,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst = 6,
+    .dio = {5, 4, LMIC_UNUSED_PIN}
+};
+
+void do_send(osjob_t *j) {
+  // Check if ready to send
+  if (LMIC.opmode & OP_TXRXPEND) {
+      Serial.println("TX/RX pending, not sending");
+  } else {
+      static uint8_t data[] = "hello";
+      LMIC_setTxData2(1, data, sizeof(data) - 1, 0);
+      Serial.println("Packet queued");
+  }
+}
+
+void onEvent(ev_t ev) {
+  Serial.print(os_getTime());
+  Serial.print(": ");
+
+  switch (ev) {
+  case EV_JOINING:
+      Serial.println("EV_JOINING");
+      break;
+  case EV_JOINED:
+      Serial.println("EV_JOINED");
+      LMIC_setLinkCheckMode(0);
+      break;
+  case EV_TXCOMPLETE:
+      Serial.println("EV_TXCOMPLETE");
+      // schedule next send
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(60), do_send);
+      break;
+  default:
+      Serial.println(ev);
+      break;
+  }
+}
+
+static osjob_t sendjob;
+
+void setup() {
+  Serial.begin(115200);
+  delay(2000);
+
+  os_init();
+  LMIC_reset();
+
+  // start joining
+  do_send(&sendjob);
+}
+
+void loop() {
+  os_runloop_once();
+}
